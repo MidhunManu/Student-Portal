@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main error-page">
+    <div class="container text-center py-5">
+        <div class="error-badge">404</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-desc text-muted">
+            <%= typeof message !== 'undefined' ? message : 'The page or resource you requested could not be located on the portal.' %>
+        </p>
+        <div class="error-actions mt-4">
+            <a href="/dashboard" class="btn btn-primary btn-lg">Back to Safety</a>
+            <a href="/" class="btn btn-outline btn-lg">Home Page</a>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">My Event Registrations</h1>
+                <p class="page-subtitle">Track your confirmed seats, automatic waitlist positions, and registration history.</p>
+            </div>
+            <a href="/events" class="btn btn-primary">Browse More Events</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card">
+            <div class="card-body">
+                <% if (registrations && registrations.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Event Title</th>
+                                    <th>Event Date</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Registered On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% registrations.forEach(reg => { %>
+                                    <tr>
+                                        <td>
+                                            <a href="/events/<%= reg.eventId %>" class="font-bold"><%= reg.eventTitle %></a>
+                                        </td>
+                                        <td><%= reg.eventDate ? new Date(reg.eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A' %></td>
+                                        <td><%= reg.location || 'Campus' %></td>
+                                        <td>
+                                            <span class="badge-status badge-<%= reg.status.toLowerCase() %>">
+                                                <%= reg.status %>
+                                            </span>
+                                        </td>
+                                        <td><%= new Date(reg.createdAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a href="/events/<%= reg.eventId %>" class="btn btn-outline btn-sm">View Event</a>
+
+                                                <% if (reg.status !== 'CANCELLED') { %>
+                                                    <form action="/events/<%= reg.eventId %>/cancel" method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to cancel your registration? If you are confirmed, your seat will be automatically given to the next waitlisted student.')">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <button type="submit" class="btn btn-danger-outline btn-sm">Cancel Seat</button>
+                                                    </form>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state py-5">
+                        <div class="empty-icon">🎟️</div>
+                        <h3>No event registrations found</h3>
+                        <p class="text-muted">You have not registered for any events yet. Check out upcoming events and reserve your seat.</p>
+                        <a href="/events" class="btn btn-primary mt-3">Browse Upcoming Events</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

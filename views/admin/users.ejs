@@ -1,0 +1,85 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Manage Users & Roles</h1>
+            <p class="page-subtitle">View all registered portal accounts and assign authorized roles.</p>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="filter-card mb-4">
+            <form action="/admin/users" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name or email..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <select name="role" class="form-control">
+                        <option value="ALL">All Roles</option>
+                        <% roles.forEach(r => { %>
+                            <option value="<%= r %>" <%= query.role === r ? 'selected' : '' %>><%= r %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Filter</button>
+                <a href="/admin/users" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <% if (users && users.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email Address</th>
+                                    <th>Current Role</th>
+                                    <th>Assign Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% users.forEach(u => { %>
+                                    <tr>
+                                        <td>#<%= u.id %></td>
+                                        <td><strong><%= u.name %></strong></td>
+                                        <td><%= u.email %></td>
+                                        <td>
+                                            <span class="badge-role badge-role-<%= u.role.toLowerCase() %>"><%= u.role %></span>
+                                        </td>
+                                        <td>
+                                            <% if (u.id === currentUser.id) { %>
+                                                <span class="text-muted text-sm">(Current Admin Account)</span>
+                                            <% } else { %>
+                                                <form action="/admin/users/<%= u.id %>/role" method="POST" class="inline-role-form">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <select name="role" class="form-control form-control-sm role-select" onchange="this.form.submit()">
+                                                        <% roles.forEach(r => { %>
+                                                            <option value="<%= r %>" <%= u.role === r ? 'selected' : '' %>><%= r %></option>
+                                                        <% }) %>
+                                                    </select>
+                                                </form>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <%- include('../partials/pagination') %>
+                <% } else { %>
+                    <div class="empty-state py-5">
+                        <p>No users found matching search criteria.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

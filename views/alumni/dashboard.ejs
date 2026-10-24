@@ -1,0 +1,132 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <%- include('../partials/flash') %>
+
+        <!-- Alumni Welcome Banner -->
+        <div class="dashboard-banner">
+            <div class="banner-content">
+                <span class="badge-role badge-role-alumni">Alumni Network</span>
+                <h1 class="dashboard-greeting">Welcome, <%= alumni.name %></h1>
+                <p class="dashboard-subtext">Mentor students, expand your professional alumni network, and post career opportunities.</p>
+            </div>
+            <div class="banner-stats">
+                <div class="stat-box">
+                    <span class="stat-box-num"><%= data.connectionsCount %></span>
+                    <span class="stat-box-label">Connections</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-box-num"><%= data.pendingRequestsCount %></span>
+                    <span class="stat-box-label">Pending Requests</span>
+                </div>
+            </div>
+        </div>
+
+        <% if (!data.profile || !data.profile.company) { %>
+            <div class="card card-notice mb-4">
+                <div class="d-flex justify-between align-center">
+                    <div>
+                        <h4 class="m-0">✨ Complete Your Alumni Profile</h4>
+                        <p class="text-muted m-0">Add your current company, role, and industry bio so fellow alumni and students can discover and connect with you.</p>
+                    </div>
+                    <a href="/alumni/profile" class="btn btn-primary btn-sm">Update Profile</a>
+                </div>
+            </div>
+        <% } %>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-main-col">
+                <!-- My Posted Career Opportunities -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-between align-center">
+                        <h2 class="card-title">My Posted Opportunities</h2>
+                        <div>
+                            <a href="/jobs/new" class="btn btn-primary btn-sm">+ Post New Job</a>
+                            <a href="/jobs/my" class="btn btn-outline btn-sm">Manage All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (data.myJobs && data.myJobs.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Company</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% data.myJobs.forEach(job => { %>
+                                            <tr>
+                                                <td><a href="/jobs/<%= job.id %>" class="font-bold"><%= job.title %></a></td>
+                                                <td><%= job.company %></td>
+                                                <td><span class="badge-tag"><%= job.jobType %></span></td>
+                                                <td><span class="badge-status badge-<%= job.status.toLowerCase() %>"><%= job.status %></span></td>
+                                                <td>
+                                                    <a href="/jobs/<%= job.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <p>You haven't posted any jobs or internships yet.</p>
+                                <a href="/jobs/new" class="btn btn-primary btn-sm mt-2">Post a Job Opening</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Announcements for Alumni -->
+                <div class="card">
+                    <div class="card-header d-flex justify-between align-center">
+                        <h2 class="card-title">College News & Bulletins</h2>
+                        <a href="/announcements" class="text-sm">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <% if (data.announcements && data.announcements.length > 0) { %>
+                            <div class="announcement-mini-list">
+                                <% data.announcements.forEach(a => { %>
+                                    <div class="announcement-mini-item">
+                                        <span class="badge-category badge-sm"><%= a.category %></span>
+                                        <h5><a href="/announcements/<%= a.id %>"><%= a.title %></a></h5>
+                                        <p class="text-muted text-xs"><%= new Date(a.publishedAt || a.createdAt).toLocaleDateString() %></p>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <p class="text-muted">No announcements currently published.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alumni Sidebar Actions -->
+            <div class="dashboard-side-col">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title">Alumni Hub</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="quick-links-list">
+                            <li><a href="/alumni/profile">👤 Edit My Alumni Profile</a></li>
+                            <li><a href="/alumni/connections">🤝 View Network & Requests (<%= data.pendingRequestsCount %> pending)</a></li>
+                            <li><a href="/alumni">🔍 Explore Alumni Directory</a></li>
+                            <li><a href="/jobs/new">💼 Post a Job or Internship</a></li>
+                            <li><a href="/events">📅 Browse Campus Events</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

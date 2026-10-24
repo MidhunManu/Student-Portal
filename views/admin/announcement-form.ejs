@@ -1,0 +1,58 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title"><%= isEdit ? 'Edit Announcement: ' + announcement.title : 'Create College Announcement' %></h1>
+            <p class="page-subtitle">Publish to the student and alumni bulletin boards.</p>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card card-form">
+            <div class="card-body">
+                <form action="<%= isEdit ? '/admin/announcements/' + announcement.id + '/edit' : '/admin/announcements/new' %>" method="POST" novalidate>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="form-group">
+                        <label for="title" class="form-label">Announcement Title *</label>
+                        <input type="text" id="title" name="title" class="form-control" value="<%= announcement ? announcement.title : '' %>" required placeholder="e.g. Spring 2026 Examination Guidelines">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="category" class="form-label">Category *</label>
+                            <select id="category" name="category" class="form-control" required>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat %>" <%= announcement && announcement.category === cat ? 'selected' : '' %>><%= cat %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="status" class="form-label">Status *</label>
+                            <select id="status" name="status" class="form-control" required>
+                                <% statuses.forEach(st => { %>
+                                    <option value="<%= st %>" <%= announcement && announcement.status === st ? 'selected' : '' %>><%= st %></option>
+                                <% }) %>
+                            </select>
+                            <small class="form-text text-muted">Only 'PUBLISHED' announcements are visible to students and alumni.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content" class="form-label">Announcement Content *</label>
+                        <textarea id="content" name="content" class="form-control" rows="8" required placeholder="Write the announcement body here..."><%= announcement ? announcement.content : '' %></textarea>
+                    </div>
+
+                    <div class="form-actions mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg"><%= isEdit ? 'Update Announcement' : 'Publish Announcement' %></button>
+                        <a href="/admin/announcements" class="btn btn-outline btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

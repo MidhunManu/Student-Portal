@@ -1,0 +1,80 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">Career & Job Opportunities</h1>
+                <p class="page-subtitle">Exclusive employment and internship opportunities posted directly by college alumni and partners.</p>
+            </div>
+            <% if (currentUser && (currentUser.role === 'ALUMNI' || currentUser.role === 'ADMIN')) { %>
+                <a href="/jobs/new" class="btn btn-primary">+ Post Job Opening</a>
+            <% } %>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="filter-card mb-4">
+            <form action="/jobs" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search by job title or company..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <select name="jobType" class="form-control">
+                        <option value="ALL">All Job Types</option>
+                        <% jobTypes.forEach(jt => { %>
+                            <option value="<%= jt %>" <%= query.jobType === jt ? 'selected' : '' %>><%= jt.replace('_', ' ') %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Filter</button>
+                <a href="/jobs" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <% if (jobs && jobs.length > 0) { %>
+            <div class="job-card-list">
+                <% jobs.forEach(job => { %>
+                    <div class="card job-card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-between align-start">
+                                <div>
+                                    <div class="d-flex align-center gap-2 mb-1">
+                                        <span class="badge-tag"><%= job.jobType.replace('_', ' ') %></span>
+                                        <span class="text-sm text-muted">📍 <%= job.location %></span>
+                                    </div>
+                                    <h3 class="job-title m-0">
+                                        <a href="/jobs/<%= job.id %>"><%= job.title %></a>
+                                    </h3>
+                                    <p class="job-company font-bold text-muted mb-2"><%= job.company %></p>
+                                </div>
+                                <a href="/jobs/<%= job.id %>" class="btn btn-primary btn-sm">View Position</a>
+                            </div>
+
+                            <p class="job-desc text-muted mb-3">
+                                <%= job.description.length > 180 ? job.description.substring(0, 180) + '...' : job.description %>
+                            </p>
+
+                            <div class="job-footer text-xs text-muted d-flex justify-between align-center border-top pt-2">
+                                <span>Shared by Alumnus <strong><%= job.posterName %></strong></span>
+                                <span>Posted <%= new Date(job.createdAt).toLocaleDateString() %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <%- include('../partials/pagination') %>
+        <% } else { %>
+            <div class="empty-state py-5">
+                <div class="empty-icon">💼</div>
+                <h3>No job postings found</h3>
+                <p class="text-muted">No open positions currently match your filter selections.</p>
+                <a href="/jobs" class="btn btn-primary mt-3">View All Jobs</a>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

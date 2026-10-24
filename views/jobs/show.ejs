@@ -1,0 +1,86 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="breadcrumb mb-3">
+            <a href="/jobs">&larr; Back to Career Listings</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="detail-layout">
+            <div class="detail-main">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="job-detail-header mb-4">
+                            <div class="d-flex align-center gap-2 mb-2">
+                                <span class="badge-tag"><%= job.jobType.replace('_', ' ') %></span>
+                                <span class="badge-status badge-<%= job.status.toLowerCase() %>"><%= job.status %></span>
+                            </div>
+                            <h1 class="job-detail-title"><%= job.title %></h1>
+                            <h3 class="job-detail-company text-muted"><%= job.company %> &bull; <%= job.location %></h3>
+                            <p class="text-sm text-muted mt-1">Posted by <%= job.posterName %> (<%= job.posterEmail %>) on <%= new Date(job.createdAt).toLocaleDateString() %></p>
+                        </div>
+
+                        <div class="job-section mb-4">
+                            <h3>Role Description</h3>
+                            <p class="content-paragraph"><%= job.description %></p>
+                        </div>
+
+                        <% if (job.requirements) { %>
+                            <div class="job-section mb-4">
+                                <h3>Requirements & Qualifications</h3>
+                                <p class="content-paragraph"><%= job.requirements %></p>
+                            </div>
+                        <% } %>
+
+                        <% if (canManage) { %>
+                            <div class="job-management-bar mt-5 pt-3 border-top d-flex justify-between align-center">
+                                <span class="text-sm font-bold text-muted">Author / Admin Controls:</span>
+                                <div class="table-actions">
+                                    <a href="/jobs/<%= job.id %>/edit" class="btn btn-outline btn-sm">Edit Listing</a>
+                                    <form action="/jobs/<%= job.id %>/delete" method="POST" class="inline-form" onsubmit="return confirm('Delete this job listing?')">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="btn btn-danger-outline btn-sm">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Sidebar -->
+            <div class="detail-sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">How to Apply</h3>
+                    </div>
+                    <div class="card-body">
+                        <% if (job.status === 'ACTIVE') { %>
+                            <p class="text-sm text-muted mb-3">Follow the instructions provided by the alumnus:</p>
+                            <% if (job.applyUrlOrEmail.includes('@')) { %>
+                                <div class="apply-box">
+                                    <span class="text-xs text-muted d-block mb-1">Send your resume to:</span>
+                                    <a href="mailto:<%= job.applyUrlOrEmail %>" class="btn btn-primary btn-block btn-lg">Email Application</a>
+                                    <small class="text-muted text-xs d-block mt-2 text-center"><%= job.applyUrlOrEmail %></small>
+                                </div>
+                            <% } else { %>
+                                <div class="apply-box">
+                                    <a href="<%= job.applyUrlOrEmail.startsWith('http') ? job.applyUrlOrEmail : 'https://' + job.applyUrlOrEmail %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-block btn-lg">Apply on External Site &rarr;</a>
+                                </div>
+                            <% } %>
+                        <% } else { %>
+                            <div class="alert alert-warning">
+                                <p class="m-0">This position has been closed and is no longer accepting applications.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

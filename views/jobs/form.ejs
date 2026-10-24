@@ -1,0 +1,81 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title"><%= isEdit ? 'Edit Job: ' + job.title : 'Post a Career Opportunity' %></h1>
+            <p class="page-subtitle">Share full-time positions, internships, or contract roles with student talent and alumni.</p>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card card-form">
+            <div class="card-body">
+                <form action="<%= isEdit ? '/jobs/' + job.id + '/edit' : '/jobs/new' %>" method="POST" novalidate>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label for="title" class="form-label">Position / Job Title *</label>
+                            <input type="text" id="title" name="title" class="form-control" value="<%= job ? job.title : '' %>" required placeholder="e.g. Junior Backend Engineer (Node.js)">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="jobType" class="form-label">Employment Type *</label>
+                            <select id="jobType" name="jobType" class="form-control" required>
+                                <% jobTypes.forEach(jt => { %>
+                                    <option value="<%= jt %>" <%= job && job.jobType === jt ? 'selected' : '' %>><%= jt.replace('_', ' ') %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="company" class="form-label">Hiring Company *</label>
+                            <input type="text" id="company" name="company" class="form-control" value="<%= job ? job.company : '' %>" required placeholder="e.g. Acme Corp">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="location" class="form-label">Location / Workplace *</label>
+                            <input type="text" id="location" name="location" class="form-control" value="<%= job ? job.location : '' %>" required placeholder="e.g. San Francisco, CA / Remote">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label">Role Description & Responsibilities *</label>
+                        <textarea id="description" name="description" class="form-control" rows="5" required placeholder="Describe the role, team, and day-to-day work..."><%= job ? job.description : '' %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requirements" class="form-label">Key Requirements & Preferred Skills</label>
+                        <textarea id="requirements" name="requirements" class="form-control" rows="4" placeholder="- B.S. in Computer Science or related degree&#10;- Familiarity with TypeScript and SQL databases&#10;- Strong problem-solving mindset"><%= job ? job.requirements : '' %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applyUrlOrEmail" class="form-label">Application Method (URL or Email) *</label>
+                        <input type="text" id="applyUrlOrEmail" name="applyUrlOrEmail" class="form-control" value="<%= job ? job.applyUrlOrEmail : '' %>" required placeholder="https://company.com/apply or jobs@company.com">
+                        <small class="form-text text-muted">Provide a careers page URL or a hiring email where candidates should send their resumes.</small>
+                    </div>
+
+                    <% if (isEdit && typeof statuses !== 'undefined') { %>
+                        <div class="form-group">
+                            <label for="status" class="form-label">Listing Status</label>
+                            <select id="status" name="status" class="form-control">
+                                <% statuses.forEach(st => { %>
+                                    <option value="<%= st %>" <%= job.status === st ? 'selected' : '' %>><%= st %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    <% } %>
+
+                    <div class="form-actions mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg"><%= isEdit ? 'Save Job Changes' : 'Publish Opportunity' %></button>
+                        <a href="/jobs/my" class="btn btn-outline btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

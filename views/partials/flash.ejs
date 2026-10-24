@@ -1,0 +1,20 @@
+<% if (typeof flash !== 'undefined') { %>
+    <% if (flash.error) { %>
+        <div class="alert alert-danger" role="alert">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-content"><%= flash.error %></div>
+        </div>
+    <% } %>
+    <% if (flash.success) { %>
+        <div class="alert alert-success" role="alert">
+            <span class="alert-icon">✓</span>
+            <div class="alert-content"><%= flash.success %></div>
+        </div>
+    <% } %>
+    <% if (flash.info) { %>
+        <div class="alert alert-info" role="alert">
+            <span class="alert-icon">ℹ️</span>
+            <div class="alert-content"><%= flash.info %></div>
+        </div>
+    <% } %>
+<% } %>

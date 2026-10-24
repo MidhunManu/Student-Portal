@@ -1,0 +1,154 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <span class="badge-role badge-role-admin">Administration</span>
+                <h1 class="page-title">College Administration Dashboard</h1>
+                <p class="page-subtitle">Portal oversight, event operations, announcements, job moderation, and user permissions.</p>
+            </div>
+            <div class="header-actions">
+                <a href="/admin/events/new" class="btn btn-primary">+ New Event</a>
+                <a href="/admin/announcements/new" class="btn btn-outline">+ New Announcement</a>
+            </div>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <!-- Admin Summary Stat Cards -->
+        <div class="stats-overview-grid">
+            <div class="metric-card">
+                <div class="metric-icon">👨‍🎓</div>
+                <div class="metric-info">
+                    <span class="metric-label">Registered Students</span>
+                    <h3 class="metric-value"><%= data.counts.students %></h3>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">🎓</div>
+                <div class="metric-info">
+                    <span class="metric-label">Verified Alumni</span>
+                    <h3 class="metric-value"><%= data.counts.alumni %></h3>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">📅</div>
+                <div class="metric-info">
+                    <span class="metric-label">Active / Upcoming Events</span>
+                    <h3 class="metric-value"><%= data.counts.upcomingEvents %> <small class="text-muted">/ <%= data.counts.totalEvents %></small></h3>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">🎟️</div>
+                <div class="metric-info">
+                    <span class="metric-label">Total Registrations</span>
+                    <h3 class="metric-value"><%= data.counts.totalRegistrations %></h3>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">💼</div>
+                <div class="metric-info">
+                    <span class="metric-label">Active Job Posts</span>
+                    <h3 class="metric-value"><%= data.counts.activeJobs %></h3>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">📢</div>
+                <div class="metric-info">
+                    <span class="metric-label">Published Announcements</span>
+                    <h3 class="metric-value"><%= data.counts.publishedAnnouncements %></h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Overview Tables -->
+        <div class="dashboard-grid mt-4">
+            <!-- Events Section -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-between align-center">
+                    <h2 class="card-title">Recent Campus Events</h2>
+                    <a href="/admin/events" class="btn btn-outline btn-sm">Manage All Events</a>
+                </div>
+                <div class="card-body">
+                    <% if (data.recentEvents && data.recentEvents.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Capacity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% data.recentEvents.forEach(evt => { %>
+                                        <tr>
+                                            <td><strong><a href="/events/<%= evt.id %>"><%= evt.title %></a></strong></td>
+                                            <td><%= new Date(evt.eventDate).toLocaleDateString() %></td>
+                                            <td><%= evt.confirmedCount || 0 %> / <%= evt.capacity %></td>
+                                            <td><span class="badge-status badge-<%= evt.status.toLowerCase() %>"><%= evt.status %></span></td>
+                                            <td>
+                                                <a href="/admin/events/<%= evt.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted">No events created yet.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Announcements Section -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-between align-center">
+                    <h2 class="card-title">Recent Announcements</h2>
+                    <a href="/admin/announcements" class="btn btn-outline btn-sm">Manage All Announcements</a>
+                </div>
+                <div class="card-body">
+                    <% if (data.recentAnnouncements && data.recentAnnouncements.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% data.recentAnnouncements.forEach(a => { %>
+                                        <tr>
+                                            <td><strong><a href="/announcements/<%= a.id %>"><%= a.title %></a></strong></td>
+                                            <td><span class="badge-category"><%= a.category %></span></td>
+                                            <td><span class="badge-status badge-<%= a.status.toLowerCase() %>"><%= a.status %></span></td>
+                                            <td>
+                                                <a href="/admin/announcements/<%= a.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted">No announcements created yet.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

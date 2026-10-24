@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main error-page">
+    <div class="container text-center py-5">
+        <div class="error-badge">403</div>
+        <h1 class="error-title">Access Forbidden</h1>
+        <p class="error-desc text-muted">
+            <%= typeof message !== 'undefined' ? message : 'You do not have permission to access this resource or perform this action.' %>
+        </p>
+        <div class="error-actions mt-4">
+            <a href="/dashboard" class="btn btn-primary btn-lg">Return to Dashboard</a>
+            <a href="/" class="btn btn-outline btn-lg">Home Page</a>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

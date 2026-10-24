@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="breadcrumb mb-3">
+            <a href="/alumni">&larr; Back to Alumni Directory</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card profile-header-card mb-4">
+            <div class="card-body">
+                <div class="profile-hero">
+                    <div class="profile-large-avatar">
+                        <%= profile.userName ? profile.userName.charAt(0).toUpperCase() : 'A' %>
+                    </div>
+                    <div class="profile-hero-info">
+                        <span class="badge-role badge-role-alumni">Apex Alumnus</span>
+                        <h1 class="profile-name"><%= profile.userName %></h1>
+                        <h3 class="profile-headline text-muted">
+                            <%= profile.role ? profile.role + ' ' : '' %><%= profile.company ? 'at ' + profile.company : '' %>
+                        </h3>
+                        <p class="profile-submeta text-sm text-muted">
+                            🎓 <%= profile.degree %> in <%= profile.major %> &bull; Class of <%= profile.graduationYear %>
+                            <% if (profile.location) { %>
+                                &bull; 📍 <%= profile.location %>
+                            <% } %>
+                        </p>
+                    </div>
+
+                    <div class="profile-hero-action">
+                        <% if (isSelf) { %>
+                            <a href="/alumni/profile" class="btn btn-outline">Edit My Profile</a>
+                        <% } else if (currentUser && currentUser.role === 'ALUMNI') { %>
+                            <% if (!connectionStatus) { %>
+                                <form action="/alumni/connections/request" method="POST">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <input type="hidden" name="recipientId" value="<%= profile.userId %>">
+                                    <button type="submit" class="btn btn-primary btn-lg">🤝 Connect</button>
+                                </form>
+                            <% } else if (connectionStatus.status === 'ACCEPTED') { %>
+                                <div class="connected-badge-box">
+                                    <span class="badge-status badge-confirmed badge-lg">✓ Connected</span>
+                                    <form action="/alumni/connections/remove" method="POST" class="mt-2" onsubmit="return confirm('Remove this connection?')">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <input type="hidden" name="connectionId" value="<%= connectionStatus.connectionId %>">
+                                        <button type="submit" class="btn btn-danger-outline btn-sm">Disconnect</button>
+                                    </form>
+                                </div>
+                            <% } else if (connectionStatus.status === 'PENDING') { %>
+                                <% if (connectionStatus.isRequester) { %>
+                                    <span class="badge-status badge-waitlisted badge-lg">Request Sent</span>
+                                <% } else { %>
+                                    <div class="table-actions">
+                                        <form action="/alumni/connections/respond" method="POST" class="inline-form">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <input type="hidden" name="connectionId" value="<%= connectionStatus.connectionId %>">
+                                            <input type="hidden" name="action" value="ACCEPT">
+                                            <button type="submit" class="btn btn-primary">Accept Request</button>
+                                        </form>
+                                        <form action="/alumni/connections/respond" method="POST" class="inline-form">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <input type="hidden" name="connectionId" value="<%= connectionStatus.connectionId %>">
+                                            <input type="hidden" name="action" value="REJECT">
+                                            <button type="submit" class="btn btn-outline">Decline</button>
+                                        </form>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-details-grid">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Professional Bio & Mentorship</h3>
+                </div>
+                <div class="card-body">
+                    <% if (profile.bio) { %>
+                        <p class="content-paragraph"><%= profile.bio %></p>
+                    <% } else { %>
+                        <p class="text-muted">This alumnus hasn't provided a biography yet.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Social & Professional Links</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="profile-links-list">
+                        <% if (profile.linkedinUrl) { %>
+                            <li>
+                                <strong>LinkedIn:</strong> 
+                                <a href="<%= profile.linkedinUrl %>" target="_blank" rel="noopener noreferrer"><%= profile.linkedinUrl %> &rarr;</a>
+                            </li>
+                        <% } %>
+                        <% if (profile.githubUrl) { %>
+                            <li>
+                                <strong>GitHub / Portfolio:</strong> 
+                                <a href="<%= profile.githubUrl %>" target="_blank" rel="noopener noreferrer"><%= profile.githubUrl %> &rarr;</a>
+                            </li>
+                        <% } %>
+                        <% if (!profile.linkedinUrl && !profile.githubUrl) { %>
+                            <li class="text-muted">No public links listed.</li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

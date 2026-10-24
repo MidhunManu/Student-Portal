@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Alumni Directory & Network</h1>
+            <p class="page-subtitle">Connect with graduates across industries, companies, and graduating classes.</p>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="filter-card mb-4">
+            <form action="/alumni" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name, role, major, company..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <input type="text" name="company" class="form-control" placeholder="Filter by company..." value="<%= query.company || '' %>">
+                </div>
+                <div class="filter-group">
+                    <input type="number" name="graduationYear" class="form-control" placeholder="Grad Year" value="<%= query.graduationYear || '' %>" min="1950" max="<%= new Date().getFullYear() + 5 %>">
+                </div>
+                <button type="submit" class="btn btn-secondary">Search Directory</button>
+                <a href="/alumni" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <% if (alumni && alumni.length > 0) { %>
+            <div class="card-grid">
+                <% alumni.forEach(a => { %>
+                    <div class="alumni-card card">
+                        <div class="card-body">
+                            <div class="alumni-avatar mb-3">
+                                <%= a.userName ? a.userName.charAt(0).toUpperCase() : 'A' %>
+                            </div>
+                            <h3 class="alumni-name">
+                                <a href="/alumni/view/<%= a.userId %>"><%= a.userName %></a>
+                            </h3>
+                            <p class="alumni-role font-bold text-sm">
+                                <%= a.role ? a.role : 'Alumnus' %>
+                                <%= a.company ? 'at ' + a.company : '' %>
+                            </p>
+                            <p class="alumni-meta text-xs text-muted mb-3">
+                                🎓 <%= a.degree %> (<%= a.major %>) &bull; Class of <%= a.graduationYear || 'N/A' %>
+                                <% if (a.location) { %>
+                                    &bull; 📍 <%= a.location %>
+                                <% } %>
+                            </p>
+                            <% if (a.bio) { %>
+                                <p class="alumni-bio text-sm text-muted mb-3">
+                                    <%= a.bio.length > 110 ? a.bio.substring(0, 110) + '...' : a.bio %>
+                                </p>
+                            <% } %>
+                            <div class="alumni-footer pt-3 border-top d-flex justify-between align-center">
+                                <a href="/alumni/view/<%= a.userId %>" class="btn btn-outline btn-sm btn-block">View Full Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <%- include('../partials/pagination') %>
+        <% } else { %>
+            <div class="empty-state py-5">
+                <div class="empty-icon">🎓</div>
+                <h3>No alumni found</h3>
+                <p class="text-muted">No alumni profiles matched your search filters.</p>
+                <a href="/alumni" class="btn btn-primary mt-3">Reset Filters</a>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

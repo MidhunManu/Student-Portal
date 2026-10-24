@@ -1,0 +1,109 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="auth-wrapper">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <span class="auth-logo">🏛️</span>
+                <h1 class="auth-title">Create Your Portal Account</h1>
+                <p class="auth-subtitle">Register as a current Student or College Alumnus</p>
+            </div>
+
+            <%- include('../partials/flash') %>
+
+            <form action="/register" method="POST" class="auth-form" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            class="form-control" 
+                            placeholder="John Doe" 
+                            required 
+                            autocomplete="name"
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="email" class="form-label">Institutional / Primary Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-control" 
+                            placeholder="user@college.edu" 
+                            required 
+                            autocomplete="email"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="role" class="form-label">Account Role</label>
+                        <select id="role" name="role" class="form-control" required>
+                            <option value="STUDENT">Student (Current Undergrad / Postgrad)</option>
+                            <option value="ALUMNI">Alumni (Graduate / Working Professional)</option>
+                        </select>
+                        <small class="form-text text-muted">Administrative accounts cannot be registered publicly.</small>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="collegeId" class="form-label">College / Campus</label>
+                        <select id="collegeId" name="collegeId" class="form-control">
+                            <% if (typeof colleges !== 'undefined' && colleges.length > 0) { %>
+                                <% colleges.forEach(c => { %>
+                                    <option value="<%= c.id %>"><%= c.name %></option>
+                                <% }) %>
+                            <% } else { %>
+                                <option value="1">Main Campus</option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="password" class="form-label">Password (Min. 8 characters)</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-control" 
+                            placeholder="••••••••" 
+                            required 
+                            autocomplete="new-password"
+                        >
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            class="form-control" 
+                            placeholder="••••••••" 
+                            required 
+                            autocomplete="new-password"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Complete Registration</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/login">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,97 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">Manage Campus Events</h1>
+                <p class="page-subtitle">Create, modify, view capacity/waitlist numbers, and cancel events.</p>
+            </div>
+            <a href="/admin/events/new" class="btn btn-primary">+ Create New Event</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <!-- Filter bar -->
+        <div class="filter-card mb-4">
+            <form action="/admin/events" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search event title or location..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <select name="status" class="form-control">
+                        <option value="ALL">All Statuses</option>
+                        <option value="UPCOMING" <%= query.status === 'UPCOMING' ? 'selected' : '' %>>UPCOMING</option>
+                        <option value="CANCELLED" <%= query.status === 'CANCELLED' ? 'selected' : '' %>>CANCELLED</option>
+                        <option value="COMPLETED" <%= query.status === 'COMPLETED' ? 'selected' : '' %>>COMPLETED</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Filter</button>
+                <a href="/admin/events" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <% if (events && events.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Event Title</th>
+                                    <th>Date & Time</th>
+                                    <th>Location</th>
+                                    <th>Confirmed / Cap</th>
+                                    <th>Waitlisted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% events.forEach(evt => { %>
+                                    <tr>
+                                        <td>
+                                            <strong><a href="/events/<%= evt.id %>"><%= evt.title %></a></strong>
+                                        </td>
+                                        <td><%= new Date(evt.eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></td>
+                                        <td><%= evt.location %></td>
+                                        <td>
+                                            <span class="font-bold"><%= evt.confirmedCount || 0 %></span> / <%= evt.capacity %>
+                                        </td>
+                                        <td>
+                                            <span class="badge-tag"><%= evt.waitlistedCount || 0 %> waitlisted</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge-status badge-<%= evt.status.toLowerCase() %>"><%= evt.status %></span>
+                                        </td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a href="/admin/events/<%= evt.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+                                                <% if (evt.status !== 'CANCELLED') { %>
+                                                    <form action="/admin/events/<%= evt.id %>/cancel" method="POST" class="inline-form" onsubmit="return confirm('Cancel this event?')">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <button type="submit" class="btn btn-danger-outline btn-sm">Cancel</button>
+                                                    </form>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <%- include('../partials/pagination') %>
+                <% } else { %>
+                    <div class="empty-state py-5">
+                        <p>No events found matching your criteria.</p>
+                        <a href="/admin/events/new" class="btn btn-primary mt-2">Create First Event</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,84 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">Moderate Career Opportunities</h1>
+                <p class="page-subtitle">Review active job listings posted by alumni and remove inappropriate content.</p>
+            </div>
+            <a href="/jobs/new" class="btn btn-primary">+ Post College Job</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="filter-card mb-4">
+            <form action="/admin/jobs" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search title or company..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <select name="status" class="form-control">
+                        <option value="ALL">All Statuses</option>
+                        <option value="ACTIVE" <%= query.status === 'ACTIVE' ? 'selected' : '' %>>ACTIVE</option>
+                        <option value="CLOSED" <%= query.status === 'CLOSED' ? 'selected' : '' %>>CLOSED</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Filter</button>
+                <a href="/admin/jobs" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <% if (jobs && jobs.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Company</th>
+                                    <th>Type</th>
+                                    <th>Posted By</th>
+                                    <th>Status</th>
+                                    <th>Posted Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% jobs.forEach(job => { %>
+                                    <tr>
+                                        <td><strong><a href="/jobs/<%= job.id %>"><%= job.title %></a></strong></td>
+                                        <td><%= job.company %></td>
+                                        <td><span class="badge-tag"><%= job.jobType %></span></td>
+                                        <td><%= job.posterName %> (<%= job.posterEmail %>)</td>
+                                        <td><span class="badge-status badge-<%= job.status.toLowerCase() %>"><%= job.status %></span></td>
+                                        <td><%= new Date(job.createdAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a href="/jobs/<%= job.id %>" class="btn btn-outline btn-sm">View</a>
+                                                <form action="/admin/jobs/<%= job.id %>/delete" method="POST" class="inline-form" onsubmit="return confirm('Permanently remove this job listing?')">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn-danger-outline btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <%- include('../partials/pagination') %>
+                <% } else { %>
+                    <div class="empty-state py-5">
+                        <p>No job listings found.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

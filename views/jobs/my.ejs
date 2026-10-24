@@ -1,0 +1,67 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">My Posted Opportunities</h1>
+                <p class="page-subtitle">Manage, edit, or close job and internship posts you have shared with the campus community.</p>
+            </div>
+            <a href="/jobs/new" class="btn btn-primary">+ Post New Opening</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card">
+            <div class="card-body">
+                <% if (jobs && jobs.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Company</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Posted Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% jobs.forEach(job => { %>
+                                    <tr>
+                                        <td><strong><a href="/jobs/<%= job.id %>"><%= job.title %></a></strong></td>
+                                        <td><%= job.company %></td>
+                                        <td><span class="badge-tag"><%= job.jobType.replace('_', ' ') %></span></td>
+                                        <td><span class="badge-status badge-<%= job.status.toLowerCase() %>"><%= job.status %></span></td>
+                                        <td><%= new Date(job.createdAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a href="/jobs/<%= job.id %>" class="btn btn-outline btn-sm">View</a>
+                                                <a href="/jobs/<%= job.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+                                                <form action="/jobs/<%= job.id %>/delete" method="POST" class="inline-form" onsubmit="return confirm('Remove this job post?')">
+                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                    <button type="submit" class="btn btn-danger-outline btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state py-5">
+                        <div class="empty-icon">💼</div>
+                        <h3>You haven't posted any jobs yet</h3>
+                        <p class="text-muted">Help current students launch their careers by posting available positions at your company.</p>
+                        <a href="/jobs/new" class="btn btn-primary mt-3">Post First Opening</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

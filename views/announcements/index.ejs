@@ -1,0 +1,74 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">College News & Announcements</h1>
+                <p class="page-subtitle">Official communications from academic departments, student affairs, and administration.</p>
+            </div>
+            <% if (currentUser && currentUser.role === 'ADMIN') { %>
+                <a href="/admin/announcements/new" class="btn btn-primary">+ New Announcement</a>
+            <% } %>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="filter-card mb-4">
+            <form action="/announcements" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search announcements..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <select name="category" class="form-control">
+                        <option value="ALL">All Categories</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat %>" <%= query.category === cat ? 'selected' : '' %>><%= cat %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Filter</button>
+                <a href="/announcements" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <% if (announcements && announcements.length > 0) { %>
+            <div class="announcement-list">
+                <% announcements.forEach(a => { %>
+                    <div class="card mb-3 announcement-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span class="badge-category"><%= a.category %></span>
+                                <span class="text-sm text-muted">
+                                    <%= new Date(a.publishedAt || a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                </span>
+                            </div>
+                            <h2 class="announcement-title">
+                                <a href="/announcements/<%= a.id %>"><%= a.title %></a>
+                            </h2>
+                            <p class="announcement-excerpt">
+                                <%= a.content.length > 250 ? a.content.substring(0, 250) + '...' : a.content %>
+                            </p>
+                            <div class="d-flex justify-between align-center mt-3 pt-2 border-top">
+                                <span class="text-xs text-muted">Posted by <%= a.authorName || 'College Administration' %></span>
+                                <a href="/announcements/<%= a.id %>" class="btn btn-outline btn-sm">Read Full Notice &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <%- include('../partials/pagination') %>
+        <% } else { %>
+            <div class="empty-state py-5">
+                <div class="empty-icon">📢</div>
+                <h3>No announcements found</h3>
+                <p class="text-muted">No notices matching your criteria have been published.</p>
+                <a href="/announcements" class="btn btn-primary mt-3">View All Announcements</a>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

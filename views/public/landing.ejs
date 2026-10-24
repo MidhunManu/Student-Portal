@@ -1,0 +1,137 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <%- include('../partials/flash') %>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="hero-badge">Official Campus Network</span>
+                <h1 class="hero-title">Connecting Campus Talent with Alumni Leadership</h1>
+                <p class="hero-subtitle">
+                    The integrated portal for students to register for academic events, discover mentorship, explore verified alumni connections, and unlock career opportunities.
+                </p>
+                <div class="hero-actions">
+                    <% if (!currentUser) { %>
+                        <a href="/register" class="btn btn-primary btn-lg">Join the Portal</a>
+                        <a href="/login" class="btn btn-outline btn-lg">Sign In</a>
+                    <% } else { %>
+                        <a href="/dashboard" class="btn btn-primary btn-lg">Go to My Dashboard</a>
+                        <a href="/events" class="btn btn-outline btn-lg">Browse Events</a>
+                    <% } %>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="portal-stat-grid">
+                    <div class="portal-stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-desc">Verified Students & Alumni</span>
+                    </div>
+                    <div class="portal-stat-item">
+                        <span class="stat-number">Live</span>
+                        <span class="stat-desc">Event Waitlist & Promotion</span>
+                    </div>
+                    <div class="portal-stat-item">
+                        <span class="stat-number">Direct</span>
+                        <span class="stat-desc">Alumni Mentorship & Jobs</span>
+                    </div>
+                    <div class="portal-stat-item">
+                        <span class="stat-number">Official</span>
+                        <span class="stat-desc">College Announcements</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Events Preview -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Upcoming Campus Events</h2>
+                    <p class="section-subtitle">Register early to secure confirmed seating or join the automatic waitlist.</p>
+                </div>
+                <a href="/events" class="section-link">View all events &rarr;</a>
+            </div>
+
+            <div class="card-grid">
+                <% if (events && events.length > 0) { %>
+                    <% events.forEach(event => { %>
+                        <div class="event-card">
+                            <div class="event-card-header">
+                                <span class="badge-tag">Event</span>
+                                <span class="event-capacity <%= (event.confirmedCount || 0) >= event.capacity ? 'capacity-full' : 'capacity-available' %>">
+                                    <%= event.confirmedCount || 0 %> / <%= event.capacity %> Seats
+                                </span>
+                            </div>
+                            <h3 class="event-title"><a href="/events/<%= event.id %>"><%= event.title %></a></h3>
+                            <p class="event-desc"><%= event.description.length > 120 ? event.description.substring(0, 120) + '...' : event.description %></p>
+                            <div class="event-meta">
+                                <div class="meta-item">
+                                    <span class="meta-icon">📍</span>
+                                    <span><%= event.location %></span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-icon">📅</span>
+                                    <span><%= new Date(event.eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                                </div>
+                            </div>
+                            <div class="event-footer">
+                                <a href="/events/<%= event.id %>" class="btn btn-outline btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <p>No upcoming events currently scheduled. Check back soon!</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Announcements Preview -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">College News & Announcements</h2>
+                    <p class="section-subtitle">Stay up-to-date with official administration bulletins and campus updates.</p>
+                </div>
+                <a href="/announcements" class="section-link">All announcements &rarr;</a>
+            </div>
+
+            <div class="announcement-list">
+                <% if (announcements && announcements.length > 0) { %>
+                    <% announcements.forEach(announcement => { %>
+                        <div class="announcement-card">
+                            <div class="announcement-header">
+                                <span class="badge-category"><%= announcement.category %></span>
+                                <span class="announcement-date">
+                                    <%= new Date(announcement.publishedAt || announcement.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                </span>
+                            </div>
+                            <h3 class="announcement-title">
+                                <a href="/announcements/<%= announcement.id %>"><%= announcement.title %></a>
+                            </h3>
+                            <p class="announcement-content">
+                                <%= announcement.content.length > 150 ? announcement.content.substring(0, 150) + '...' : announcement.content %>
+                            </p>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <p>No announcements published at this time.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,83 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">Campus Events & Workshops</h1>
+                <p class="page-subtitle">Discover academic symposia, career networking panels, hackathons, and guest lectures.</p>
+            </div>
+            <% if (currentUser && currentUser.role === 'ADMIN') { %>
+                <a href="/admin/events/new" class="btn btn-primary">+ Create Event</a>
+            <% } %>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <!-- Event Filters -->
+        <div class="filter-card mb-4">
+            <form action="/events" method="GET" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search events by title or location..." value="<%= query.search || '' %>">
+                </div>
+                <div class="filter-group">
+                    <select name="status" class="form-control">
+                        <option value="ALL">All Events</option>
+                        <option value="UPCOMING" <%= query.status === 'UPCOMING' ? 'selected' : '' %>>Upcoming Only</option>
+                        <option value="COMPLETED" <%= query.status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
+                        <option value="CANCELLED" <%= query.status === 'CANCELLED' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Search</button>
+                <a href="/events" class="btn btn-outline">Reset</a>
+            </form>
+        </div>
+
+        <!-- Event Grid -->
+        <% if (events && events.length > 0) { %>
+            <div class="card-grid">
+                <% events.forEach(event => { %>
+                    <div class="event-card">
+                        <div class="event-card-header">
+                            <span class="badge-status badge-<%= event.status.toLowerCase() %>"><%= event.status %></span>
+                            <span class="event-capacity <%= (event.confirmedCount || 0) >= event.capacity ? 'capacity-full' : 'capacity-available' %>">
+                                <%= event.confirmedCount || 0 %> / <%= event.capacity %> Seats
+                            </span>
+                        </div>
+                        <h3 class="event-title"><a href="/events/<%= event.id %>"><%= event.title %></a></h3>
+                        <p class="event-desc"><%= event.description.length > 130 ? event.description.substring(0, 130) + '...' : event.description %></p>
+                        <div class="event-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">📍</span>
+                                <span><%= event.location %></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📅</span>
+                                <span><%= new Date(event.eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">⏳</span>
+                                <span class="text-xs">Deadline: <%= new Date(event.registrationDeadline).toLocaleDateString() %></span>
+                            </div>
+                        </div>
+                        <div class="event-footer">
+                            <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm btn-block">View Details & Register</a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <%- include('../partials/pagination') %>
+        <% } else { %>
+            <div class="empty-state py-5">
+                <div class="empty-icon">📅</div>
+                <h3>No events found</h3>
+                <p class="text-muted">No events currently match your search criteria.</p>
+                <a href="/events" class="btn btn-primary mt-3">View All Events</a>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

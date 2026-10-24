@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main error-page">
+    <div class="container text-center py-5">
+        <div class="error-badge error-badge-500">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-desc text-muted">
+            <%= typeof message !== 'undefined' ? message : 'An unexpected error occurred. Our technical staff has been notified.' %>
+        </p>
+        <div class="error-actions mt-4">
+            <a href="/dashboard" class="btn btn-primary btn-lg">Return to Dashboard</a>
+            <a href="/" class="btn btn-outline btn-lg">Home Page</a>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

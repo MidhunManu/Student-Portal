@@ -1,0 +1,129 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header d-flex justify-between align-center">
+            <div>
+                <h1 class="page-title">Alumni Connections & Requests</h1>
+                <p class="page-subtitle">Manage your professional network across graduating classes and companies.</p>
+            </div>
+            <a href="/alumni" class="btn btn-primary">Find More Alumni</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <!-- Pending Received Requests -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">Pending Connection Requests Received (<%= pendingReceived.length %>)</h2>
+            </div>
+            <div class="card-body">
+                <% if (pendingReceived && pendingReceived.length > 0) { %>
+                    <div class="connection-list">
+                        <% pendingReceived.forEach(req => { %>
+                            <div class="connection-item">
+                                <div class="connection-avatar">
+                                    <%= req.otherUserName.charAt(0).toUpperCase() %>
+                                </div>
+                                <div class="connection-details">
+                                    <h4><a href="/alumni/view/<%= req.otherUserId %>"><%= req.otherUserName %></a></h4>
+                                    <p class="text-muted text-sm">
+                                        <%= req.otherRole ? req.otherRole + ' at ' : '' %><%= req.otherCompany || 'Apex Alumnus' %> 
+                                        &bull; Class of <%= req.otherGraduationYear || 'N/A' %> (<%= req.otherDegree || '' %>)
+                                    </p>
+                                </div>
+                                <div class="connection-actions">
+                                    <form action="/alumni/connections/respond" method="POST" class="inline-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <input type="hidden" name="connectionId" value="<%= req.id %>">
+                                        <input type="hidden" name="action" value="ACCEPT">
+                                        <button type="submit" class="btn btn-primary btn-sm">Accept</button>
+                                    </form>
+                                    <form action="/alumni/connections/respond" method="POST" class="inline-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <input type="hidden" name="connectionId" value="<%= req.id %>">
+                                        <input type="hidden" name="action" value="REJECT">
+                                        <button type="submit" class="btn btn-outline btn-sm">Decline</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p class="text-muted">No pending connection requests waiting for your response.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Established Connections -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">My Professional Connections (<%= connections.length %>)</h2>
+            </div>
+            <div class="card-body">
+                <% if (connections && connections.length > 0) { %>
+                    <div class="connection-list">
+                        <% connections.forEach(conn => { %>
+                            <div class="connection-item">
+                                <div class="connection-avatar">
+                                    <%= conn.otherUserName.charAt(0).toUpperCase() %>
+                                </div>
+                                <div class="connection-details">
+                                    <h4><a href="/alumni/view/<%= conn.otherUserId %>"><%= conn.otherUserName %></a></h4>
+                                    <p class="text-muted text-sm">
+                                        <%= conn.otherRole ? conn.otherRole + ' at ' : '' %><%= conn.otherCompany || 'Apex Alumnus' %>
+                                        &bull; Class of <%= conn.otherGraduationYear || 'N/A' %>
+                                    </p>
+                                    <span class="text-xs text-muted">Connected since <%= new Date(conn.updatedAt).toLocaleDateString() %></span>
+                                </div>
+                                <div class="connection-actions">
+                                    <a href="/alumni/view/<%= conn.otherUserId %>" class="btn btn-outline btn-sm">Profile</a>
+                                    <form action="/alumni/connections/remove" method="POST" class="inline-form" onsubmit="return confirm('Remove this alumnus from your connections?')">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <input type="hidden" name="connectionId" value="<%= conn.id %>">
+                                        <button type="submit" class="btn btn-danger-outline btn-sm">Disconnect</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state py-4">
+                        <p class="text-muted">You haven't connected with any alumni yet.</p>
+                        <a href="/alumni" class="btn btn-primary btn-sm mt-2">Explore Alumni Directory</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Pending Sent Requests -->
+        <% if (pendingSent && pendingSent.length > 0) { %>
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Outgoing Requests Sent (<%= pendingSent.length %>)</h2>
+                </div>
+                <div class="card-body">
+                    <div class="connection-list">
+                        <% pendingSent.forEach(sent => { %>
+                            <div class="connection-item">
+                                <div class="connection-avatar avatar-muted">
+                                    <%= sent.otherUserName.charAt(0).toUpperCase() %>
+                                </div>
+                                <div class="connection-details">
+                                    <h4><a href="/alumni/view/<%= sent.otherUserId %>"><%= sent.otherUserName %></a></h4>
+                                    <p class="text-muted text-sm"><%= sent.otherCompany ? sent.otherCompany : 'Apex Alumnus' %></p>
+                                </div>
+                                <div class="connection-actions">
+                                    <span class="badge-status badge-waitlisted">Pending Response</span>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

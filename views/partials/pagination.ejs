@@ -1,0 +1,43 @@
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+    <nav class="pagination-wrapper" aria-label="Page navigation">
+        <ul class="pagination">
+            <% 
+                const q = typeof query !== 'undefined' ? { ...query } : {};
+                function pageUrl(p) {
+                    const params = new URLSearchParams();
+                    for (const [k, v] of Object.entries(q)) {
+                        if (k !== 'page' && v) params.set(k, v);
+                    }
+                    params.set('page', p);
+                    return '?' + params.toString();
+                }
+            %>
+
+            <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="<%= pageUrl(currentPage - 1) %>">&laquo; Previous</a>
+                </li>
+            <% } else { %>
+                <li class="page-item disabled"><span class="page-link">&laquo; Previous</span></li>
+            <% } %>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <% if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="<%= pageUrl(i) %>"><%= i %></a>
+                    </li>
+                <% } else if (i === currentPage - 3 || i === currentPage + 3) { %>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <% } %>
+            <% } %>
+
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="<%= pageUrl(currentPage + 1) %>">Next &raquo;</a>
+                </li>
+            <% } else { %>
+                <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+            <% } %>
+        </ul>
+    </nav>
+<% } %>

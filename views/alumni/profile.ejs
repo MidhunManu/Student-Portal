@@ -1,0 +1,144 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">My Alumni Profile</h1>
+            <p class="page-subtitle">Keep your professional information up to date to help students and fellow graduates connect with you.</p>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card card-form">
+            <div class="card-body">
+                <form action="/alumni/profile" method="POST" novalidate>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                    <h3 class="form-section-title">Academic Background</h3>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="graduationYear" class="form-label">Graduation Year *</label>
+                            <input 
+                                type="number" 
+                                id="graduationYear" 
+                                name="graduationYear" 
+                                class="form-control" 
+                                value="<%= profile.graduationYear || new Date().getFullYear() %>" 
+                                min="1950" 
+                                max="<%= new Date().getFullYear() + 10 %>" 
+                                required
+                            >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="degree" class="form-label">Degree Obtained *</label>
+                            <input 
+                                type="text" 
+                                id="degree" 
+                                name="degree" 
+                                class="form-control" 
+                                placeholder="e.g. B.S., M.S., B.Tech" 
+                                value="<%= profile.degree || '' %>" 
+                                required
+                            >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="major" class="form-label">Major / Field of Study *</label>
+                            <input 
+                                type="text" 
+                                id="major" 
+                                name="major" 
+                                class="form-control" 
+                                placeholder="e.g. Computer Science" 
+                                value="<%= profile.major || '' %>" 
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-title mt-4">Current Professional Career</h3>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="company" class="form-label">Company / Organization</label>
+                            <input 
+                                type="text" 
+                                id="company" 
+                                name="company" 
+                                class="form-control" 
+                                placeholder="e.g. Google, Microsoft, Startup" 
+                                value="<%= profile.company || '' %>"
+                            >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="role" class="form-label">Job Title / Role</label>
+                            <input 
+                                type="text" 
+                                id="role" 
+                                name="role" 
+                                class="form-control" 
+                                placeholder="e.g. Senior Software Engineer" 
+                                value="<%= profile.role || '' %>"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location" class="form-label">Location</label>
+                        <input 
+                            type="text" 
+                            id="location" 
+                            name="location" 
+                            class="form-control" 
+                            placeholder="e.g. San Francisco, CA / London / Remote" 
+                            value="<%= profile.location || '' %>"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio" class="form-label">Professional Bio & Mentorship Summary</label>
+                        <textarea 
+                            id="bio" 
+                            name="bio" 
+                            class="form-control" 
+                            rows="4" 
+                            placeholder="Share your career journey, expertise, and willingness to mentor students..."
+                        ><%= profile.bio || '' %></textarea>
+                    </div>
+
+                    <h3 class="form-section-title mt-4">Professional Profiles & Links</h3>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="linkedinUrl" class="form-label">LinkedIn Profile URL</label>
+                            <input 
+                                type="url" 
+                                id="linkedinUrl" 
+                                name="linkedinUrl" 
+                                class="form-control" 
+                                placeholder="https://linkedin.com/in/username" 
+                                value="<%= profile.linkedinUrl || '' %>"
+                            >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="githubUrl" class="form-label">GitHub / Portfolio URL</label>
+                            <input 
+                                type="url" 
+                                id="githubUrl" 
+                                name="githubUrl" 
+                                class="form-control" 
+                                placeholder="https://github.com/username" 
+                                value="<%= profile.githubUrl || '' %>"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-actions mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Save Profile Changes</button>
+                        <a href="/alumni/dashboard" class="btn btn-outline btn-lg">Back to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,41 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="site-main">
+    <div class="container">
+        <div class="breadcrumb mb-3">
+            <a href="/announcements">&larr; Back to Announcements</a>
+        </div>
+
+        <%- include('../partials/flash') %>
+
+        <div class="card card-article">
+            <div class="card-body">
+                <div class="article-header mb-4">
+                    <span class="badge-category"><%= announcement.category %></span>
+                    <h1 class="article-title mt-2"><%= announcement.title %></h1>
+                    <div class="article-meta text-muted text-sm mt-2">
+                        <span>Published by <strong><%= announcement.authorName || 'Campus Administration' %></strong></span>
+                        &bull;
+                        <span><%= new Date(announcement.publishedAt || announcement.createdAt).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) %></span>
+                    </div>
+                </div>
+
+                <div class="article-content">
+                    <p class="content-paragraph"><%= announcement.content %></p>
+                </div>
+
+                <% if (currentUser && currentUser.role === 'ADMIN') { %>
+                    <div class="article-admin-bar mt-5 pt-3 border-top d-flex justify-between align-center">
+                        <span class="badge-status badge-<%= announcement.status.toLowerCase() %>"><%= announcement.status %></span>
+                        <div class="table-actions">
+                            <a href="/admin/announcements/<%= announcement.id %>/edit" class="btn btn-outline btn-sm">Edit Announcement</a>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>
