@@ -20,6 +20,11 @@ export interface CreateUserInput {
     role: UserRole
 }
 
+export interface UserLoginInput {
+    email: string,
+    password: string,
+}
+
 export interface UserResponse {
     id: number,
     name: string,

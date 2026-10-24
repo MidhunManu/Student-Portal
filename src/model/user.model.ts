@@ -1,18 +1,21 @@
 import { pool } from "../config/db.js";
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import type { CreateUserInput } from "../types/user.types.js";
+import type { UserRole } from "../enums/user.role.js";
 
 interface UserRow extends RowDataPacket {
     id: number,
     name: string,
     email: string,
+    collegeId: number,
+    role: UserRole,
     passwordHash: string,
     createdAt: Date,
 }
 
 export async function findByEmail(email: string) {
     const [rows] = await pool.execute<UserRow[]>(
-        `SELECT id, email, password_hash, created_at
+        `SELECT id, email, college_id, role, password_hash, created_at
          FROM users
          WHERE email = ?`,
          [email]
