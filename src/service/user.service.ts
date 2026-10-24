@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 
 import * as UserModel from "../model/user.model.js"
-import type { CreateUserInput } from "../types/user.types.js";
+import type { CreateUserInput, UserResponse } from "../types/user.types.js";
 
-export async function register(input: CreateUserInput) {
+export async function register(input: CreateUserInput): Promise<UserResponse> {
     const email = input.email.trim().toLowerCase();
     const existingUser = await UserModel.findByEmail(email);
 
@@ -17,6 +17,9 @@ export async function register(input: CreateUserInput) {
 
     return {
         id: userId,
-        email,
+        name: input.name,
+        email: email,
+        collegeId: input.collegeId,
+        role: input.role
     };
 }

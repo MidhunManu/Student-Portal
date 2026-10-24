@@ -19,3 +19,11 @@ export interface CreateUserInput {
     collegeId: number,
     role: UserRole
 }
+
+export interface UserResponse {
+    id: number,
+    name: string,
+    email: string,
+    collegeId: number,
+    role: UserRole,
+}
