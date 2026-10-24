@@ -36,6 +36,6 @@ async function startServer() {
 startServer().catch(async (error) => {
     console.error("Failed to start server:", error);
 
-    await pool.end().catch(() => {});
+    await pool.end().catch(() => { });
     process.exitCode = 1;
 });
