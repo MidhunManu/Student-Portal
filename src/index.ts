@@ -1,21 +1,41 @@
-import express from 'express'
-import { pool } from './db.js';
-import logger from './logger.js';
+import "dotenv/config";
+import app from "./app.js";
+import { pool } from "./config/db.js";
 
-const app = express();
-app.get("/health-check", async (req, res) => {
-   try {
-        const [rows] = await pool.query("select 1 as connected");
-        logger.info("database connection successful")
-        res.send("healthy");
-   } catch(error){
-        res.send("db down");
-   } finally {
-        await pool.end();
-        res.end();
-   }
-});
+const PORT = Number(process.env.PORT ?? 3000);
 
-app.listen(process.env.PORT ?? 3000, () =>{
-    logger.info(`server running on ${process.env.PORT ?? 3000}`)
+async function startServer() {
+    await pool.query("SELECT 1");
+
+    const server = app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+    });
+
+    async function shutdown() {
+        console.log("Shutting down server...");
+
+        server.close(async (error) => {
+            try {
+                await pool.end();
+
+                if (error) {
+                    console.error("HTTP server shutdown failed:", error);
+                    process.exitCode = 1;
+                }
+            } catch (dbError) {
+                console.error("Database shutdown failed:", dbError);
+                process.exitCode = 1;
+            }
+        });
+    }
+
+    process.once("SIGINT", shutdown);
+    process.once("SIGTERM", shutdown);
+}
+
+startServer().catch(async (error) => {
+    console.error("Failed to start server:", error);
+
+    await pool.end().catch(() => {});
+    process.exitCode = 1;
 });
